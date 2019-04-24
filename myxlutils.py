@@ -38,7 +38,7 @@ def get_column_names_and_index(sheetVar, emptyDict):
     for x in range(1,(sheetVar.max_column+1)):
         emptyDict[str(sheetVar.cell(row=1, column=x).value)] = x
     
-    print("Values added to dictionary")
+    # print("Values added to dictionary")
 
 
 def format_date_rows(sheetVar, colNamesDict, formatString, *args):
@@ -54,7 +54,7 @@ def format_date_rows(sheetVar, colNamesDict, formatString, *args):
         for columnName in args:
             sheetVar.cell(row=r, column=colNamesDict[columnName]).number_format = formatString
 
-    print("date rows formatted")
+    # print("date rows formatted")
 
 def save_and_reopen(wbVar, sheetVar, tempFileName):
     """

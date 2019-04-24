@@ -4,13 +4,18 @@
 
 import os
 import openpyxl
+import pandas as pd
 from excelFNames import combinedFName
 from myxlutils import get_column_names_and_index
 from openpyxl.utils import get_column_letter
-
+from paths import startPath, savePath
 # **************************************************************************************************************
 # ------------------- Load vlookup table from a txt or excel file ------------------------
 # **************************************************************************************************************
+os.chdir(startPath) # vlook.csv is in the start path
+vlook = pd.read_csv('vlook.csv', header=None, index_col=0, squeeze=True).to_dict()
+os.chdir(savePath)
+
 wbCombined = openpyxl.load_workbook(combinedFName)
 sCombined = wbCombined.active
 combinedDict = {}
@@ -28,9 +33,11 @@ for r in range(2, sCombined.max_row+1):
                 sCombined.cell(row=r, column = combinedDict["Type"]).value = "CRB" 
 
         else:
-                # Have this come from a txt or .xlsx file that can be edited / maintained by Christy
-                vlookString = "=VLOOKUP(" + column + str(r) + ",vlook!A:B,2,FALSE)"
-                sCombined.cell(row=r, column= combinedDict["Type"]).value = vlookString
-        
+                lookup = sCombined.cell(row=r, column = combinedDict["SubProjectTypeName"]).value
+                sCombined.cell(row=r, column= combinedDict["Type"]).value = vlook.get(lookup, None)
+
+
 wbCombined.save(combinedFName)
 wbCombined.close()
+
+print("Value of type column set as per values in 'vlook.csv' table\n")

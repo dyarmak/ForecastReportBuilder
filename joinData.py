@@ -32,7 +32,6 @@ sCred = wbCred.active
 # -------------------- Copy Forecast -> Combined ------------------------------------- 
 foreRowCount = 0
 
-print("Looping sFore Rows")
 # We include the column names from Forecast.xlsx, not for other 2 sheets
 for r in range(1, sFore.max_row+1):
         for c in range(1, sFore.max_column+1):
@@ -76,9 +75,6 @@ for r in range(2, sCred.max_row+1):
 
 wbCombined.save(combinedFName)
 
-totalRows = foreRowCount + invoRowCount + credRowCount
-print("Total Rows: " + str(totalRows))
-
 # Save and re-load workbook
 wbCombined.save(combinedFName)
 wbCombined.close()
@@ -93,6 +89,20 @@ alignment = Alignment(horizontal="left", vertical="top")
 for x in range(1,(sCombined.max_column+1)):
     sCombined.cell(row=1, column=x).alignment = alignment
 
+format_date_rows(sCombined, combinedDict, "mm-dd-yy", "Due Date", "InvoiceDateSent", "OriginalDueDate")
+
+sCombined.column_dimensions[get_column_letter(combinedDict['Due Date'])].width = 15.2
+sCombined.column_dimensions[get_column_letter(combinedDict['Due'])].width = 15.2
+sCombined.column_dimensions[get_column_letter(combinedDict['InvoiceDateSent'])].width = 15.2
+sCombined.column_dimensions[get_column_letter(combinedDict['OriginalDueDate'])].width = 15.2
+
 # Save and close
 wbCombined.save(combinedFName)
 wbCombined.close()
+
+print("Forecast Row Count: " + str(foreRowCount))
+print("Invoiced Row Count: " + str(invoRowCount))
+print("Credits Row Count: " + str(credRowCount))
+totalRows = foreRowCount + invoRowCount + credRowCount
+print("Total Rows Joined: " + str(totalRows))
+print("Data from 3 queries combined\n")

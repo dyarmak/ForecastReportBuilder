@@ -23,27 +23,13 @@ sCred = wbCred.active
 
 
 # ----------- BEGIN Find Column Indexes -------------------
-print("Loading column names")
-
+print("Loading Credits column names")
 #Create an empty dictionary
 creditsDict = {}
 # fill the dictionary with:
 # Key = column names
 # Value = column index
-
 get_column_names_and_index(sCred, creditsDict)
-if(logMe == 1):
-    creditsDictLog = open("creditsDictLog.txt", "w+")
-    #Prints all of the dictionary key:value pairs
-    for field, row in creditsDict.items():
-        logString = field + " : " + str(row) + "\n"
-        creditsDictLog.write(logString)
-        # print(logString)
-    creditsDictLog.close()
-
-    print("Created creditsDictLog.txt\n")
-# ----------- END Find Column Indexes ------------------    
-
 
 
 # Append "CR" to SubProjectID
@@ -52,15 +38,12 @@ for r in range(2, sCred.max_row+1):
     sCred.cell(row=r, column=creditsDict["SubProjectID"]).value = str(sCred.cell(row=r, column=creditsDict["SubProjectID"]).value) +"CR"
 print("Added 'CR' after SubProjectIDs")
 
-# ------------- INSERT Column ----------
-#Insert after SubProjectTypeName
-sCred.insert_cols(creditsDict["SubProjectTypeName"]+1)
-sCred.cell(row=1, column= creditsDict["SubProjectTypeName"]+1).value = "Type"
+
 
 # ------------ SAVE Output Excel File -------------
 
 wbCred.save(creditFName)
-print("File saved as " + creditFName)
+print("Manipulated Credits query saved as " + creditFName)
 wbCred.close()
 
 

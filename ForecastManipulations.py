@@ -20,42 +20,20 @@ wbFore = openpyxl.load_workbook(forecastFName)
 sFore = wbFore.active
 
 # ----------- BEGIN Find Column Indexes -------------------
-# Should have a dict list that stores the column names
-print("Loading column names")
+print("Loading Forecast column names")
 #Create an empty dictionary
 forecastDict = {}
 # fill the dictionary with:
 # Key = column names
 # Value = column index
-
 get_column_names_and_index(sFore, forecastDict)
 
-# Log all of the dictionary key:value pairs
-if(logMe == 1):
-    forcastDictLog = open("forecastDictLog.txt", "w+")
-    for field, row in forecastDict.items():
-        logString = field + " : " + str(row) + "\n"
-        forcastDictLog.write(logString)
-        # print(logString)
-    forcastDictLog.close()
-    print("Created forecastDictLog.txt\n")
-# ----------- END Find Column Indexes ------------------    
-
-
 # -------------- BEGIN Formatting -----------
-# Freeze the top row
-sFore.freeze_panes = "A2"
-
-# Need to top and left align all the data
-yellowFill = PatternFill(patternType="solid", fgColor="FFFF00" )
-
-# -------------- END Formatting --------------
-
 
 # ----------- BEGIN Find and Delete ------------
 # Delete WHERE SubProjectStatus == "planning" && IncludeinBudget == False && InvoicedAmount == 0)
 
-# Need to add invAmount test here as well
+# Need to add invAmount test here as well?
 
 print("Removing rows WHERE Status == Planning AND inBudget == False\n")
 
@@ -63,8 +41,8 @@ if(logMe == 1):
     deleteLog = open("deleteLog.txt", "w+")
 
 # find and Delete WHERE Status==Planning and inBudget==False
-
-for r in range(sFore.max_row+1, 2, -1): #Start from the bottom, because of how :func delete_rows() works
+#Start from the bottom, because of how :func delete_rows() works
+for r in range(sFore.max_row+1, 2, -1): 
     if(sFore.cell(row=r, column=forecastDict["SubProjectStatus"]).value == "Planning" and sFore.cell(row=r, column=forecastDict["IncludeinBudget"]).value == False):
         if(logMe == 1):
             #Log the deleted rows
@@ -112,10 +90,6 @@ if(logMe == 1):
     print("Created noDollarValues.txt\n")
 
 
-
-# --------------- END Find -----------------------------
-
-
 # ---------- BEGIN Update Forecast Amount -------
 print("Updating forecasted amounts\n")
 
@@ -125,14 +99,13 @@ if(logMe == 1):
 # INSERT Interim invoicing logic here? or Below?
 
 for r in range(2, sFore.max_row+1):
-    # IF InvoiceDateSent != None, Forecast GETS None and we fill cell background with yellow
+    # IF InvoiceDateSent != None, Forecast GETS None
     # cell formatting does not carry over when amalgamating the data in the next step. 
     if(sFore.cell(row=r, column=forecastDict["InvoiceDateSent"]).value != None): # May need to test for == 2018 or == 2019 instead
         if(logMe == 1):
             logString = "subID " + str(sFore.cell(row=r, column=1).value) + " has an Invoice\n"
             forecastLog.write(logString)
         sFore.cell(row=r, column=forecastDict["Forecast"]).value = None
-        sFore.cell(row=r, column=forecastDict["Forecast"]).fill = yellowFill 
 
     # There is no InvoiceDateSent. 
     # IF Quoted !=None, Forecast GETS Quoted
@@ -195,16 +168,10 @@ if(logMe == 1):
     print("Created overdueLog.txt")
 # -----------END Update Due Column ---------------
 
-
-# ------------- INSERT Column ----------
-#Insert after SubProjectTypeName
-sFore.insert_cols(forecastDict["SubProjectTypeName"]+1)
-sFore.cell(row=1, column= forecastDict["SubProjectTypeName"]+1).value = "Type"
-
 # ------------ SAVE Output Excel File -------------
 
 wbFore.save(forecastFName)
-print("File saved as " + forecastFName)
+print("Manipulated Forecast query saved as " + forecastFName)
 wbFore.close()
 
 # -------------- Timer -----------------------

@@ -10,37 +10,46 @@ import os
 from os import path
 import time
 from excelFNames import forecastFName, invoicedFName, creditFName, combinedFName
+import paths
 
 print("*** WARNING ***")
-print("This script will query the DB. This may take a few minutes.")
+print("This script will execute the following SELECT queries on the DB:\nqry_forecast,\nqry_invoiced\nqry_credits")
+print("It will then combine them to build the details sheet of the ForecastReport.")
+print("This may take a few minutes to execute.")
 input("Press Enter to continue")
 
 startTimer = time.time()
 
-savePath = "py_Output"
-if os.path.exists(savePath) is False:
-        os.mkdir(savePath)
-
-os.chdir(savePath)
-
-# RUN SQLtoExcel
+# Query DB and save to excel
+print("**Running SQLtoExcel.py")
 import SQLtoExcel
+# Align Headings
+print("**Running alignHeadings.py")
+import alignHeadings
+# Set default DUE Values
+print("**Running setDueValues.py")
+import setDueValues
 # RUN Forecast manipulation code
+print("**Running ForecastManipulations.py")
 import ForecastManipulations
 # RUN Credits manipulation code
+print("**Running CreditsManipulations.py")
 import CreditsManipulations
 # RUN Invoiced manipulation code
+print("**Running InvoiceManipulations.py")
 import InvoicedManipulations
 # Amalgamate the three files into one
+print("**Running joinData.py")
 import joinData
 # Add VLookup values
+print("**Running vlook.py")
 import vlook
 
 
 # -------------- Timer -----------------------
 endTimer = time.time()
 buildTime = endTimer-startTimer
-print("Report building took: " + str(buildTime) + "seconds\n")
+print("Forecast Report Building took: " + str(buildTime) + "seconds\n")
 
 input('Press Enter to close:')
 

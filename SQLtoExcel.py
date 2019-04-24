@@ -30,3 +30,4 @@ foreDF.to_excel(forecastFName, sheet_name='Sheet1')
 invoDF.to_excel(invoicedFName, sheet_name='Sheet1')
 credDF.to_excel(creditFName, sheet_name='Sheet1')
 
+print("Data from 3 queries pulled from DB and exported to .xlsx files\n")
