@@ -23,6 +23,9 @@ startTimer = time.time()
 # Query DB and save to excel
 print("**Running SQLtoExcel.py")
 import SQLtoExcel
+# Save raw SQL to folder
+print("**Backing up raw query results")
+import saveRawSQL
 # Align Headings
 print("**Running alignHeadings.py")
 import alignHeadings
