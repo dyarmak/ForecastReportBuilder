@@ -3,6 +3,20 @@ import xlrd
 from openpyxl import Workbook
 
 
+def format_dollar_values(sheetVar, colNamesDict, formatString, *args):
+    """
+    Apply currency formatting to rows in dictionary
+    sheetVar = variable containing sheet
+    colNamesDict = dictionary of all column names in sheet
+    formatString = Should be "mm-dd-yy" for it to work
+    *args = the columnNames we want to apply date formatting to
+    """
+    
+    for r in range(2, sheetVar.max_row+1):
+        for columnName in args:
+            sheetVar.cell(row=r, column=colNamesDict[columnName]).number_format = formatString
+
+
 def cvt_xls_to_xlsx(src_file_path, dst_file_path):
     """
     Takes .xls file as input and output .xlsx file with cell contents copied

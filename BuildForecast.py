@@ -47,7 +47,10 @@ import joinData
 # Add VLookup values
 print("**Running vlook.py")
 import vlook
-
+# Build report tabs
+import buildTabs
+# Format final report
+import excelFormatting
 
 # -------------- Timer -----------------------
 endTimer = time.time()
