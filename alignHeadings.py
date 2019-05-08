@@ -1,5 +1,4 @@
 import os
-import datetime
 import openpyxl
 from myxlutils import get_column_names_and_index
 from excelFNames import forecastFName, invoicedFName, creditFName

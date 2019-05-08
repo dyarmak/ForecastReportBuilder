@@ -41,7 +41,7 @@ if(logMe == 1):
     deleteLog = open("deleteLog.txt", "w+")
 
 # find and Delete WHERE Status==Planning and inBudget==False
-#Start from the bottom, because of how :func delete_rows() works
+# Start from the bottom, because :func delete_rows() shifts the rows below it up after it deletes a row, and would therefore skip a row
 for r in range(sFore.max_row+1, 2, -1): 
     if(sFore.cell(row=r, column=forecastDict["SubProjectStatus"]).value == "Planning" and sFore.cell(row=r, column=forecastDict["IncludeinBudget"]).value == False):
         if(logMe == 1):

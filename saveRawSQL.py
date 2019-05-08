@@ -21,8 +21,8 @@ rawCreditsQry = today + "-qry_Credits_raw.xlsx"
 if os.path.exists(forecastFName):
     src = os.path.realpath(forecastFName)
     head, tail = path.split(src)
-    print("Path: " + head)
-    print("File: " + tail)
+    # print("Path: " + head)
+    # print("File: " + tail)
     dstFolder = head + "\\" + rawSQLPath
     print("Dst folder: " + dstFolder)
     tail = rawForecastQry
@@ -32,8 +32,8 @@ if os.path.exists(forecastFName):
 if os.path.exists(invoicedFName):
     src = os.path.realpath(invoicedFName)
     head, tail = path.split(src)
-    print("Path: " + head)
-    print("File: " + tail)
+    # print("Path: " + head)
+    # print("File: " + tail)
     dstFolder = head + "\\" + rawSQLPath
     print("Dst folder: " + dstFolder)
     tail = rawInvoicedQry
@@ -43,10 +43,11 @@ if os.path.exists(invoicedFName):
 if os.path.exists(creditFName):
     src = os.path.realpath(creditFName)
     head, tail = path.split(src)
-    print("Path: " + head)
-    print("File: " + tail)
+    # print("Path: " + head)
+    # print("File: " + tail)
     dstFolder = head + "\\" + rawSQLPath
     print("Dst folder: " + dstFolder)
     tail = rawCreditsQry
     dst = dstFolder + "\\" + tail
     shutil.copy(src, dst)
+print("")
