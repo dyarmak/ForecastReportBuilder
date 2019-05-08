@@ -5,18 +5,19 @@
 # 3) join them
 # 4) perform the required vlook up for setting 'Type'
 #*********************************************************************************
+print("*** WARNING ***")
+print("This script will execute SELECT queries on the DB:\n 1) qry_forecast\n 2) qry_invoiced\n 3) qry_credits")
+print("It will then combine them to build the details sheet of the ForecastReport.")
+print("It will then build the Summary, byPM, ByClient, and byType pages of the Forecast Report.")
+print("This may take a couple minutes to execute.")
+input("Press Enter if you wish to continue, or close this window.")
+print("")
 
 import os
 from os import path
 import time
 from excelFNames import forecastFName, invoicedFName, creditFName, combinedFName
 import paths
-
-print("*** WARNING ***")
-print("This script will execute the following SELECT queries on the DB:\nqry_forecast,\nqry_invoiced\nqry_credits")
-print("It will then combine them to build the details sheet of the ForecastReport.")
-print("This may take a few minutes to execute.")
-input("Press Enter to continue")
 
 startTimer = time.time()
 
@@ -48,8 +49,10 @@ import joinData
 print("**Running vlook.py")
 import vlook
 # Build report tabs
+print("**Running buildTabs.py")
 import buildTabs
 # Format final report
+print("**Running excelFormatting.py")
 import excelFormatting
 
 # -------------- Timer -----------------------

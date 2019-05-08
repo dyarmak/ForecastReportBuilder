@@ -3,16 +3,17 @@ import os
 import pandas as pd
 import numpy as np
 import openpyxl
-from excelFNames import combinedFName
+from excelFNames import combinedFName, unformattedFName
+from myxlutils import due_columns
 from paths import savePath # Need to be in the py_output folder
 
 # --------------- Settings --------------- #
 # dueCols should come from a variable that can be updated outside of the script, much like the vlook file
 
 # Define the order of the Due Cols that we want to display
-dueCols = ['Def-1', 'Act01-2019', 'Act02-2019', 'Act03-2019', 'Act04-2019', 'Overdue', 'Complete','Review',
- '04-2019', '05-2019', '06-2019', '07-2019', '08-2019', '09-2019', '10-2019', '11-2019', '12-2019',
-]
+# This will need to be changed as we get closer to year end.
+# Perhaps there should be a 12 month forecast sheet...?
+dueCols = due_columns()
 
 # Formatting floats
 pd.set_option('display.float_format', lambda x: '%.2f' % x)
@@ -28,11 +29,6 @@ detailsDF = pd.read_excel(combinedFName, index_col="SubProjectID")
 # ******************************************************************* #
 # **************************** PM TAB ******************************* #
 # ******************************************************************* #
-
-# For the summary tab, because we want subtotals by pm,
-# we have to do things in a different order than the other TABs
-# We group by PM and sum it for the subtotal amounts
-# 
 
 # read in excel with just analysis columns
 due = pd.read_excel(combinedFName, usecols=["SubProjectID", "ProjectManager", "ClientName", "Forecast", "Due"])
@@ -72,7 +68,7 @@ len(new_index)
 
 sumByPMDF.index = new_index
 
-# ---> sumByPMDF is ready for output
+print("PM Tab created")
 
 # At this point we have the PM Tab completed.
 # We will need to use the data from it to generate the PM Subtotals for Summary TAB
@@ -131,7 +127,7 @@ summaryDF.index.name = "ClientName"
 summaryDF.reset_index(drop=False, inplace=True)
 summaryDF = summaryDF.set_index(["ProjectManager", "ClientName"])
 
-# ---> summaryDF is ready for output
+print("Summary Tab created")
 
 # ******************************************************************* #
 # ************************** Client TAB **************************** #
@@ -168,7 +164,7 @@ sumByClientDF = sumByClientDF.append(companyWideTotals)
 # Set index name
 sumByClientDF.index.name = "ClientName"
 
-
+print("Client Tab created")
 
 # ******************************************************************* #
 # ************************** ByType TAB **************************** #
@@ -197,13 +193,15 @@ sumByTypeDF = sumByTypeDF.append(companyWideTotals)
 # Set index name
 sumByTypeDF.index.name = "Type" # Change to Profit Center in future?
 
-
+print("Type Tab created")
 
 # ## Export ALL the DataFrames to Excel
 # Need to name this with the current date
-with pd.ExcelWriter('ForecastSummary6.xlsx') as writer:
+with pd.ExcelWriter(unformattedFName) as writer:
     summaryDF.to_excel(writer, sheet_name='Summary')
     sumByPMDF.to_excel(writer, sheet_name='PM')
     sumByClientDF.to_excel(writer, sheet_name='ByClient')
     sumByTypeDF.to_excel(writer, sheet_name='ByType')
     detailsDF.to_excel(writer, sheet_name='Details')
+
+print("unformatted tabs saved to " + unformattedFName + "\n")
