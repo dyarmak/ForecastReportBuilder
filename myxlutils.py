@@ -1,6 +1,41 @@
 import openpyxl
 import xlrd
 from openpyxl import Workbook
+from datetime import datetime
+
+def due_columns():
+    """
+    Returns a list [] of columns for the "Due" Field
+    this would not work on past data...
+    It should be modified to somehow use data from the pandas DF.
+    """
+    today = datetime.now().date()
+    curryear = today.strftime("%Y")
+    month = today.strftime("%m")
+    dueCols = ["Def-1"]
+
+    # Act month
+    for p in range(1, today.month+1):
+        dtString = str(p) + str(curryear)
+        dt = datetime.strptime(dtString, '%m%Y').date()
+        actString = "Act"+ dt.strftime('%m') + "-" + dt.strftime('%Y')
+        dueCols.append(actString)
+
+    # Overdue, completed, Review
+    dueCols.append("Overdue")
+    dueCols.append("Complete")
+    dueCols.append("Review")
+
+# Future months
+    for p in range(today.month, 13):
+        dtString = str(p) + str(curryear)
+        dt = datetime.strptime(dtString, '%m%Y').date()
+        futureString = dt.strftime('%m') + "-" + dt.strftime('%Y')
+        dueCols.append(futureString) 
+
+    # Should check the generated list against the a list of unique due values from Pandas?
+
+    return dueCols
 
 
 def format_dollar_values(sheetVar, colNamesDict, formatString, *args):
