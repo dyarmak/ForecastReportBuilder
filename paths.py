@@ -1,8 +1,11 @@
 import os
+from datetime import datetime
+
+today = datetime.now().date()
+savePath = today.strftime("%Y%m%d")
 
 startPath = os.getcwd()
 
-savePath = "py_Output"
 if os.path.exists(savePath) is False:
         os.mkdir(savePath)
 
