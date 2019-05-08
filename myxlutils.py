@@ -11,7 +11,6 @@ def due_columns():
     """
     today = datetime.now().date()
     curryear = today.strftime("%Y")
-    month = today.strftime("%m")
     dueCols = ["Def-1"]
 
     # Act month
