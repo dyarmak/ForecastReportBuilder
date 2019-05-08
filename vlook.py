@@ -12,9 +12,9 @@ from paths import startPath, savePath
 # **************************************************************************************************************
 # ------------------- Load vlookup table from a txt or excel file ------------------------
 # **************************************************************************************************************
-os.chdir(startPath) # vlook.csv is in the start path
+
 vlook = pd.read_csv('vlook.csv', header=None, index_col=0, squeeze=True).to_dict()
-os.chdir(savePath)
+
 
 wbCombined = openpyxl.load_workbook(combinedFName)
 sCombined = wbCombined.active

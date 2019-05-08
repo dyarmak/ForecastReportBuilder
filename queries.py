@@ -13,3 +13,9 @@ forecastQuery = """SELECT tbl_SubProject.SubProjectID, tbl_SubProject.ProjectMan
 FROM (tbl_SubProjectType INNER JOIN ((tbl_Client INNER JOIN (tbl_MasterProject INNER JOIN tbl_Projects ON tbl_MasterProject.MasterProjectID = tbl_Projects.MasterProjectID) ON tbl_Client.ClientID = tbl_MasterProject.ClientID) INNER JOIN tbl_SubProject ON tbl_Projects.ProjectID = tbl_SubProject.ProjectID) ON tbl_SubProjectType.SubProjectTypeID = tbl_SubProject.SubProjectType) LEFT JOIN tbl_InvoiceSummary ON tbl_SubProject.SubProjectID = tbl_InvoiceSummary.SubProjectID
 WHERE (((tbl_Client.ClientName)<>'H2Safety') AND ((tbl_SubProject.SubProjectStatus)<>'Invoiced' And (tbl_SubProject.SubProjectStatus)<>'Cancelled'))
 ORDER BY SubProjectID ASC;"""
+
+vlookQuery = """SELECT        tbl_SubProjectType.SubProjectTypeName, tbl_SubProjectCategories.CategoryDescription AS ProfitCenter
+FROM            tbl_SubProjectType INNER JOIN
+                         tbl_SubProjectTypeCategories ON tbl_SubProjectType.SubProjectTypeID = tbl_SubProjectTypeCategories.SubProjectTypeID INNER JOIN
+                         tbl_SubProjectCategories ON tbl_SubProjectTypeCategories.SubProjectCategoryID = tbl_SubProjectCategories.SubProjectCategoryID
+ORDER BY tbl_SubProjectTypeCategories.SubProjectTypeCategoryID;"""

@@ -7,7 +7,7 @@
 import os
 import pandas as pd
 import pyodbc
-from queries import forecastQuery, invoicedQuery, creditQuery
+from queries import forecastQuery, invoicedQuery, creditQuery, vlookQuery
 from excelFNames import forecastFName, invoicedFName, creditFName
 
 # Define connection variables 
@@ -23,7 +23,12 @@ cursor = cnxn.cursor()
 foreDF = pd.read_sql(forecastQuery, cnxn, index_col='SubProjectID')
 invoDF = pd.read_sql(invoicedQuery, cnxn, index_col='SubProjectID')
 credDF = pd.read_sql(creditQuery, cnxn, index_col='SubProjectID')
+vlook = pd.read_sql(vlookQuery, cnxn, index_col="SubProjectTypeName")
 
+# Export vlook to a csv
+vlook.to_csv("vlook.csv", header=None)
+
+print("SubProjectTypeName to Class/Type/ProfitCentre query saved to vlook.csv")
 
 # export to .xlsx
 foreDF.to_excel(forecastFName, sheet_name='Sheet1')
