@@ -17,35 +17,37 @@ import os
 from os import path
 import time
 from excelFNames import forecastFName, invoicedFName, creditFName, combinedFName
-import paths
+from paths import create_output_folder
 
 startTimer = time.time()
 
-# Query DB and save to excel
-print("**Running SQLtoExcel.py")
-import SQLtoExcel
-# Save raw SQL to folder
-print("**Backing up raw query results")
-import saveRawSQL
-# Align Headings
-print("**Running alignHeadings.py")
-import alignHeadings
-# Set default DUE Values
-print("**Running setDueValues.py")
-import setDueValues
-# RUN Forecast manipulation code
-print("**Running ForecastManipulations.py")
-import ForecastManipulations
-# RUN Credits manipulation code
-print("**Running CreditsManipulations.py")
-import CreditsManipulations
-# RUN Invoiced manipulation code
-print("**Running InvoiceManipulations.py")
-import InvoicedManipulations
-# Amalgamate the three files into one
-print("**Running joinData.py")
-import joinData
-# Add VLookup values
+# create_output_folder()
+
+# # Query DB and save to excel
+# print("**Running SQLtoExcel.py")
+# import SQLtoExcel
+# # Save raw SQL to folder
+# print("**Backing up raw query results")
+# import saveRawSQL
+# # Align Headings
+# print("**Running alignHeadings.py")
+# import alignHeadings
+# # Set default DUE Values
+# print("**Running setDueValues.py")
+# import setDueValues
+# # RUN Forecast manipulation code
+# print("**Running ForecastManipulations.py")
+# import ForecastManipulations
+# # RUN Credits manipulation code
+# print("**Running CreditsManipulations.py")
+# import CreditsManipulations
+# # RUN Invoiced manipulation code
+# print("**Running InvoiceManipulations.py")
+# import InvoicedManipulations
+# # Amalgamate the three files into one
+# print("**Running joinData.py")
+# import joinData
+# # Add VLookup values
 print("**Running vlook.py")
 import vlook
 # Build report tabs

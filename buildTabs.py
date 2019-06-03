@@ -7,6 +7,8 @@ from excelFNames import combinedFName, unformattedFName
 from myxlutils import due_columns
 from paths import savePath # Need to be in the py_output folder
 
+print(os.getcwd())
+
 # --------------- Settings --------------- #
 # dueCols should come from a variable that can be updated outside of the script, much like the vlook file
 
@@ -41,8 +43,14 @@ pmNames.sort()
 # ## Create a new DF grouped by PM, with Due as columns, SumOfForecast as values
 sumByPMDF = due.groupby(["ProjectManager", "Due"]).Forecast.sum().unstack()
 
+# The script breaks here if there is an empty month. 
+# To fix this we can...
+# Create an empty DataFrame with all the columns
+blank = pd.DataFrame(columns=dueCols)
+blank = blank.append(sumByPMDF, sort=True)
+
 # Set the order of the Due columns as per the list.
-sumByPMDF = sumByPMDF[dueCols]
+sumByPMDF = blank[dueCols]
 
 # ## Sum by each Due period and save in a Series
 sumByDueCol = sumByPMDF.sum()
@@ -79,7 +87,15 @@ print("PM Tab created")
 
 # ## New DataFrame, indexed by PM->Client (a multi-index DataFrame), summed by due period 
 pmClient = due.groupby(["ProjectManager", "ClientName", "Due"]).Forecast.sum().unstack()
-pmClient = pmClient[dueCols]
+
+# The script breaks here if there is an empty month. 
+# To fix this we can...
+# Create an empty DataFrame with all the columns
+blank = pd.DataFrame(columns=dueCols)
+blank = pmClient.append(blank, sort=True)
+pmClient = blank[dueCols].copy()
+idx = pd.MultiIndex.from_tuples(tuples=pmClient.index)
+pmClient.index = idx
 
 # Iterate the rows summing Def-1 to 12-2019, storing it in the "Total" column
 for r in pmClient.index:
@@ -142,7 +158,13 @@ clientNames.sort()
 
 # ## Create a new DF grouped by PM, with Due as columns, SumOfForecast as values
 sumByClientDF = due.groupby(["ClientName", "Due"]).Forecast.sum().unstack()
-sumByClientDF = sumByClientDF[dueCols]
+
+# The script breaks here if there is an empty month. 
+# To fix this we can...
+# Create an empty DataFrame with all the columns
+blank = pd.DataFrame(columns=dueCols)
+blank = blank.append(sumByClientDF, sort=True)
+sumByClientDF = blank[dueCols].copy()
 
 # ## Sum each row, store in Totals Column
 for client in clientNames:
@@ -179,7 +201,13 @@ typeNames.sort()
 
 # Create a new DF grouped by Type, with Due as columns, SumOfForecast as values
 sumByTypeDF = typeDF.groupby(["Type", "Due"]).Forecast.sum().unstack()
-sumByTypeDF = sumByTypeDF[dueCols]
+
+# The script breaks here if there is an empty month. 
+# To fix this we can...
+# Create an empty DataFrame with all the columns
+blank = pd.DataFrame(columns=dueCols)
+blank = blank.append(sumByTypeDF, sort=True)
+sumByTypeDF = blank[dueCols].copy()
 
 # ## Sum each row, store in Totals Column
 for t in typeNames:
