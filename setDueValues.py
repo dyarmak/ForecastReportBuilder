@@ -31,17 +31,20 @@ for r in range(2, sFore.max_row+1):
     MMYYYY = MMYYYY.strftime("%m-%Y")
     sFore.cell(row=r, column=forecastHeading["Due"]).value = MMYYYY
 wbFore.save(forecastFName)
+wbFore.close()
 
 for r in range(2, sInvo.max_row+1):
     MMYYYY = sInvo.cell(row=r, column=invoicedHeading["Due Date"]).value.date()
     MMYYYY = MMYYYY.strftime("%m-%Y")
     sInvo.cell(row=r, column=invoicedHeading["Due"]).value = "Act" + MMYYYY
 wbInvo.save(invoicedFName)
+wbInvo.close()
 
 for r in range(2, sCred.max_row+1):
     MMYYYY = sCred.cell(row=r, column=creditsHeading["Due Date"]).value.date()
     MMYYYY = MMYYYY.strftime("%m-%Y")
     sCred.cell(row=r, column=creditsHeading["Due"]).value = "Act" + MMYYYY
 wbCred.save(creditFName)
+wbCred.close()
 
 print("Values of Due column set\n")
