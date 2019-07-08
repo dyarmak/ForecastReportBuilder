@@ -35,4 +35,6 @@ foreDF.to_excel(forecastFName, sheet_name='Sheet1')
 invoDF.to_excel(invoicedFName, sheet_name='Sheet1')
 credDF.to_excel(creditFName, sheet_name='Sheet1')
 
+# Changing all interim files to csv would speed up the subsequent write and load operations
+
 print("Data from 3 queries pulled from DB and exported to .xlsx files\n")
