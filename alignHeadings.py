@@ -43,6 +43,7 @@ get_column_names_and_index(sInvo, invoicedHeading)
 
 
 # -------------------------- CREDITS ----------------------------------------
+# Credits is missing "Type" and "Due"
 wbCred = openpyxl.load_workbook(creditFName)
 sCred = wbCred.active
 creditsHeading = {}
