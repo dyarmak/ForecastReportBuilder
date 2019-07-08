@@ -6,16 +6,6 @@ from myxlutils import format_date_rows, get_column_names_and_index
 from excelFNames import forecastFName, invoicedFName, creditFName, combinedFName
 
 
-# for filename in os.listdir('.'):
-#         if filename.startswith("Forecast"):
-#                 wbReport = openpyxl.load_workbook(filename)
-#                 sDetail = wbReport.get_sheet_by_name("Detail")
-
-# Delete all rows from "Detail" sheet
-#Start from the bottom, because of how :func delete_rows() works
-# for r in range(sDetail.max_row+1, 2, -1):
-#         sDetail.delete_rows(r, 1)
-
 wbCombined = openpyxl.Workbook()
 sCombined = wbCombined.active
 sCombined.title = "Detail"
