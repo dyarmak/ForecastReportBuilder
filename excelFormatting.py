@@ -196,7 +196,7 @@ for r in range(2, sPM.max_row+1):
 # Format Column Widths
 for col in range(2, sPM.max_column):
     sPM.column_dimensions[get_column_letter(col)].width = 12
-sPM.column_dimensions[get_column_letter(1)].width = 40
+sPM.column_dimensions[get_column_letter(1)].width = 25
 sPM.column_dimensions[get_column_letter(sPM.max_column)].width = 14
 
 # Color Total Rows and Cols blue and make bold
@@ -228,6 +228,38 @@ sPM.cell(row = sPM.max_row, column = PMDict["Overdue"]).border = Border(top=redB
 sPM.cell(row = sPM.max_row, column = PMDict["Complete"]).border = Border(top=redBorder, bottom=redBorder)
 sPM.cell(row = sPM.max_row, column = PMDict["Review"]).border = Border(top=redBorder, bottom=redBorder)
 sPM.cell(row = sPM.max_row, column = PMDict["Review"]+1).border = Border(top=redBorder, right=redBorder, bottom=redBorder)
+
+# *****************************************************************
+# *********************** NY-PM Tab *******************************
+# *****************************************************************
+
+NYsPM = wbReport["NY-PM"]
+
+NYPMDict = {}
+get_column_names_and_index(NYsPM, NYPMDict)
+
+# Freeze and left-align top row
+NYsPM.freeze_panes = "A2"
+
+# Format currency cols to ()
+for r in range(2, NYsPM.max_row+1):
+    for c in range(2, NYsPM.max_column+1):
+        NYsPM.cell(row=r, column=c).number_format = '"$"#,##0_);[Red]("$"#,##0)'
+
+# Format Column Widths
+for col in range(2, NYsPM.max_column):
+    NYsPM.column_dimensions[get_column_letter(col)].width = 12
+NYsPM.column_dimensions[get_column_letter(1)].width = 25
+NYsPM.column_dimensions[get_column_letter(NYsPM.max_column)].width = 14
+
+# Color Total Rows and Cols blue and make bold
+for c in range(1, NYsPM.max_column):
+    NYsPM.cell(row = NYsPM.max_row, column = c).fill = blueFill
+    NYsPM.cell(row = NYsPM.max_row, column = c).font = boldFont
+for r in range(2, NYsPM.max_row+1):
+    NYsPM.cell(row = r, column = NYPMDict["Total"]).fill = blueFill
+    NYsPM.cell(row = r, column = NYPMDict["Total"]).font = boldFont
+    NYsPM.cell(row = r, column = 1).alignment = leftAlign
 
 
 # *****************************************************************

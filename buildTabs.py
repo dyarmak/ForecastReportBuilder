@@ -4,10 +4,12 @@ import pandas as pd
 import numpy as np
 import openpyxl
 from excelFNames import combinedFName, unformattedFName
-from myxlutils import due_columns
+from myxlutils import due_columns, next_year_due_columns
 from paths import savePath # Need to be in the py_output folder
 
 print(os.getcwd())
+
+# Current Year
 
 # --------------- Settings --------------- #
 # dueCols should come from a variable that can be updated outside of the script, much like the vlook file
@@ -16,6 +18,7 @@ print(os.getcwd())
 # This will need to be changed as we get closer to year end.
 # Perhaps there should be a 12 month forecast sheet...?
 dueCols = due_columns()
+
 
 # Formatting floats
 pd.set_option('display.float_format', lambda x: '%.2f' % x)
@@ -35,10 +38,14 @@ detailsDF = pd.read_excel(combinedFName, index_col="SubProjectID")
 # read in excel with just analysis columns
 due = pd.read_excel(combinedFName, usecols=["SubProjectID", "ProjectManager", "ClientName", "Forecast", "Due"])
 
+# If a PM name is missing / nan, sort() will crash.
+# Therefore have to replace with none.
+due.fillna({'ProjectManager':'None'}, inplace=True)
+# NOW we can pull in list of PMs and sort...
+
 # Get unique PM Names and save to a list
 pmNames = due["ProjectManager"].unique().tolist()
 pmNames.sort()
-# pmCount = len(pmNames) # Don't think we need this anymore
 
 # ## Create a new DF grouped by PM, with Due as columns, SumOfForecast as values
 sumByPMDF = due.groupby(["ProjectManager", "Due"]).Forecast.sum().unstack()
@@ -223,6 +230,69 @@ sumByTypeDF.index.name = "Type" # Change to Profit Center in future?
 
 print("Type Tab created")
 
+
+# ******************************************************************* #
+# *********************** NEXT YEAR TABS **************************** #
+# ******************************************************************* #
+nyDueCols = next_year_due_columns()
+
+# ******************************************************************* #
+# *********************** NY - PM TAB ******************************* #
+# ******************************************************************* #
+
+# read in excel with just analysis columns
+due = pd.read_excel(combinedFName, usecols=["SubProjectID", "ProjectManager", "ClientName", "Forecast", "Due"])
+
+# If a PM name is missing / nan, sort() will crash.
+# Therefore have to replace with none.
+due.fillna({'ProjectManager':'None'}, inplace=True)
+# NOW we can pull in list of PMs and sort...
+
+# Get unique PM Names and save to a list
+pmNames = due["ProjectManager"].unique().tolist()
+pmNames.sort()
+
+# ## Create a new DF grouped by PM, with Due as columns, SumOfForecast as values
+ny_sumByPMDF = due.groupby(["ProjectManager", "Due"]).Forecast.sum().unstack().copy()
+
+# The script breaks here if there is an empty month. 
+# To fix this we can...
+# Create an empty DataFrame with all the columns
+ny_blank = pd.DataFrame(columns=nyDueCols)
+ny_blank = ny_blank.append(ny_sumByPMDF, sort=True)
+
+# Set the order of the Due columns as per the list.
+ny_sumByPMDF = ny_blank[nyDueCols].copy()
+
+# Get list of PM Names from DataFrame
+pmNames = ny_sumByPMDF.index.to_list()
+
+# ## Sum by each Due period and save in a Series
+ny_sumByDueCol = ny_sumByPMDF.sum()
+
+# ## Transform Series to DataFrame, Transpose, append to sumByPMDF, store in DataFrame
+ny_companyWideTotals = ny_sumByDueCol.to_frame(name="Company Wide Total").T
+ny_sumByPMDF = ny_sumByPMDF.append(ny_companyWideTotals)
+
+# Set Index Name
+ny_sumByPMDF.index.name = "ProjectManager"
+
+# ## Add a totals Column, sum each row, store in Totals Column
+for pm in pmNames:
+    ny_sumByPMDF.loc[pm, "Total"] = ny_sumByPMDF.loc[pm, :].sum()
+
+# ## Sum Company Wide Grand Total
+ny_sumByPMDF.loc["Company Wide Total", "Total"] = ny_sumByPMDF.loc["Company Wide Total"].sum()
+
+# ## Add " Total" to each index in pmSum
+new_index = ["{} Total".format(pm) for pm in pmNames]
+new_index.append("Company Wide Total")
+
+ny_sumByPMDF.index = new_index
+
+print("Next year PM Tab created")
+
+
 # ## Export ALL the DataFrames to Excel
 # Need to name this with the current date
 with pd.ExcelWriter(unformattedFName) as writer:
@@ -230,6 +300,7 @@ with pd.ExcelWriter(unformattedFName) as writer:
     sumByPMDF.to_excel(writer, sheet_name='PM')
     sumByClientDF.to_excel(writer, sheet_name='ByClient')
     sumByTypeDF.to_excel(writer, sheet_name='ByType')
+    ny_sumByPMDF.to_excel(writer, sheet_name='NY-PM')
     detailsDF.to_excel(writer, sheet_name='Details')
 
-print("unformatted tabs saved to " + unformattedFName + "\n")
+print("Unformatted tabs saved to " + unformattedFName + "\n")
