@@ -293,10 +293,83 @@ ny_sumByPMDF.index = new_index
 print("Next year PM Tab created")
 
 
+
+# ******************************************************************* #
+# ******************* Next Year Summary TAB ************************* #
+# ******************************************************************* #
+
+# New DataFrame, indexed by PM->Client (a multi-index DataFrame)
+# sum by due period 
+ny_pmClient = due.groupby(["ProjectManager", "ClientName", "Due"]).Forecast.sum().unstack()
+
+# The script breaks here if there is an empty month. 
+# To fix this we can create an empty DataFrame with all the columns
+blank = pd.DataFrame(columns=nyDueCols)
+# And append the old original DF to it.
+blank = ny_pmClient.append(blank, sort=True)
+# THEN copy so we can use the original name again. Not vert slick... but it works
+ny_pmClient = blank[nyDueCols].copy()
+# Set a multi index
+idx = pd.MultiIndex.from_tuples(tuples=ny_pmClient.index)
+ny_pmClient.index = idx
+
+# Iterate the rows summing all columns in that row, storing it in the "Total" column
+for r in ny_pmClient.index:
+    ny_pmClient.loc[r, "Total"] = ny_pmClient.loc[r, :].sum()
+
+
+# ## Build Summary-Tab DataFrame
+
+# Here we need to first create a new DF with just the first PMs values
+# Then we can insert the PM column (only be done once) and add their name (for later sorting)
+# Finally we append the PM Subtotal before moving onto the next pm
+# this can definitely be done cleaner, but for now it works great
+
+# Initialize a new DF with first pm's values
+ny_summaryDF = ny_pmClient.loc[pmNames[0]]
+
+# Add ProjectManager column
+ny_summaryDF.insert(loc = 0, column="ProjectManager", value=pmNames[0])
+# Get first pm Sums
+aSum = ny_sumByPMDF.iloc[0]
+# cvt to frame and Transpose
+aSum = aSum.to_frame(name = ny_sumByPMDF.index[0]).T
+# Add ProjectManager column
+aSum.insert(loc = 0, column="ProjectManager", value=pmNames[0])
+# Append sum to Summary DF
+ny_summaryDF = ny_summaryDF.append(aSum, sort=False)
+
+# start loop from 1 i=1
+for i in range(1,len(pmNames)):
+    client = ny_pmClient.loc[pmNames[i]]
+    client.insert(loc = 0, column="ProjectManager", value=pmNames[i])
+    aSum = ny_sumByPMDF.iloc[i]
+    aSum = aSum.to_frame(name = ny_sumByPMDF.index[i]).T
+    aSum.insert(loc = 0, column="ProjectManager", value=pmNames[i])
+    ny_summaryDF = ny_summaryDF.append(client, sort=False)
+    ny_summaryDF = ny_summaryDF.append(aSum, sort=False)
+
+
+# Add company wide total, grabbing it from the PM DataFrame
+grandTotal = ny_sumByPMDF.loc["Company Wide Total"]
+grandTotal = grandTotal.to_frame(name = "Company Wide Total").T
+grandTotal.insert(loc = 0, column="ProjectManager", value="H2Safety")
+ny_summaryDF = ny_summaryDF.append(grandTotal, sort=False)
+
+# ## GroupBy formatting with multi-index for clean excel output
+ny_summaryDF.index.name = "ClientName"
+ny_summaryDF.reset_index(drop=False, inplace=True)
+ny_summaryDF = ny_summaryDF.set_index(["ProjectManager", "ClientName"])
+
+
+print("Next Year Summary Tab created")
+
+
 # ## Export ALL the DataFrames to Excel
 # Need to name this with the current date
 with pd.ExcelWriter(unformattedFName) as writer:
     summaryDF.to_excel(writer, sheet_name='Summary')
+    ny_summaryDF.to_excel(writer, sheet_name='NY-Summary')
     sumByPMDF.to_excel(writer, sheet_name='PM')
     sumByClientDF.to_excel(writer, sheet_name='ByClient')
     sumByTypeDF.to_excel(writer, sheet_name='ByType')

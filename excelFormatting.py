@@ -322,6 +322,45 @@ sSummary.cell(row = sSummary.max_row, column = summaryDict["Complete"]).border =
 sSummary.cell(row = sSummary.max_row, column = summaryDict["Review"]).border = Border(top=redBorder, bottom=redBorder)
 sSummary.cell(row = sSummary.max_row, column = summaryDict["Review"]+1).border = Border(top=redBorder, right=redBorder, bottom=redBorder)
 
+# *****************************************************************
+# ****************** Next Year Summary Tab ************************
+# *****************************************************************
+
+NYsSummary = wbReport["NY-Summary"]
+
+NYsummaryDict = {}
+get_column_names_and_index(NYsSummary, NYsummaryDict)
+
+# Freeze and left-align top row
+NYsSummary.freeze_panes = "A2"
+
+# Format currency cols to ()
+for r in range(2, NYsSummary.max_row+1):
+    for c in range(3, NYsSummary.max_column+1):
+        NYsSummary.cell(row=r, column=c).number_format = '"$"#,##0_);[Red]("$"#,##0)'
+for r in range(2, NYsSummary.max_row):
+        NYsSummary.cell(row = r, column = 1).alignment = leftAlign
+        NYsSummary.cell(row = r, column = 2).alignment = leftAlign
+
+# Format Column Widths
+for col in range(2, NYsSummary.max_column):
+    NYsSummary.column_dimensions[get_column_letter(col)].width = 11.6
+NYsSummary.column_dimensions[get_column_letter(1)].width = 14.5
+NYsSummary.column_dimensions[get_column_letter(2)].width = 29
+NYsSummary.column_dimensions[get_column_letter(NYsSummary.max_column)].width = 13.5
+
+# Color Total Rows and Cols blue and make bold
+for r in range(2, NYsSummary.max_row+1):
+    NYsSummary.cell(row = r, column = NYsummaryDict["Total"]).fill = blueFill
+    NYsSummary.cell(row = r, column = NYsummaryDict["Total"]).font = boldFont
+     # IF ClientName (col=2) contains "Total", Format whole row Blue     
+    if (re.search("Total", NYsSummary.cell(row=r, column=2).value)):
+        for c in range(2, NYsSummary.max_column):
+            NYsSummary.cell(row=r, column=c).fill = blueFill 
+            NYsSummary.cell(row=r, column=c).font = boldFont
+            NYsSummary.cell(row = r, column = 1).alignment = leftAlign
+            NYsSummary.cell(row = r, column = 2).alignment = leftAlign
+            
 
 
 
