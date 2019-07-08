@@ -3,6 +3,23 @@ import xlrd
 from openpyxl import Workbook
 from datetime import datetime
 
+# Create a list of due columns for NEXT Year
+def next_year_due_columns():
+    """Return a list of columns for the "Due" field for NEXT year 
+    """
+    today = datetime.now().date()
+    curryear = today.year
+    next_year = datetime(curryear+1, 1, 1)
+    dueCols = []
+
+    for p in range(next_year.month, 13):
+        dtString = str(p) + str(next_year.year)
+        dt = datetime.strptime(dtString, '%m%Y').date()
+        futureString = dt.strftime('%m') + "-" + dt.strftime('%Y')
+        dueCols.append(futureString) 
+
+    return dueCols
+
 def due_columns():
     """
     Returns a list [] of columns for the "Due" Field
