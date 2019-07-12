@@ -27,7 +27,12 @@ pd.set_option('display.float_format', lambda x: '%.2f' % x)
 # ************************** Details TAB **************************** #
 # ******************************************************************* #
 # Read in full excel file for Details Sheet and save as details
+
 detailsDF = pd.read_excel(combinedFName, index_col="SubProjectID")
+
+# Set column order
+cols = ['ProjectManager', 'ClientName', 'MasterProjectName', 'ProjectID', 'ProjectName', 'SubProjectTypeName', 'Type', 'SubProjectName', 'Forecast', 'Due Date', 'Due', 'SubProjectStatus', 'Quoted', 'OriginalForecast', 'OriginalDueDate', 'Budget', 'ClientBudgetYear', 'IncludeinBudget', 'InvoiceID', 'InvoiceDateSent', 'SubTotal']
+detailsDF = detailsDF[cols]
 
 # ---> detailsDF is ready for output
 
@@ -201,6 +206,8 @@ print("Client Tab created")
 
 # read in excel with just analysis columns
 typeDF = pd.read_excel(combinedFName, usecols=["SubProjectID", "Type", "Forecast", "Due"])
+
+typeDF.fillna({'Type':'None'}, inplace=True)
 
 # Get unique Type Names and save to a list
 typeNames = typeDF["Type"].unique().tolist()
