@@ -7,7 +7,9 @@
 #*********************************************************************************
 
 import time
+import os
 from paths import create_output_folder
+from excelFNames import unformattedFName
 
 startTimer = time.time()
 
@@ -25,7 +27,7 @@ endTimer = time.time()
 buildTime = endTimer-startTimer
 print("Forecast Report Building took: " + str(buildTime) + "seconds\n")
 
-
+os.remove(unformattedFName)
 
 
 
