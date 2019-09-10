@@ -1,7 +1,7 @@
 import os
 import re
 import openpyxl
-from excelFNames import combinedFName, unformattedFName, outputFName
+from excelFNames import unformattedFName, outputFName
 from openpyxl.styles import Alignment, PatternFill, Border, Side, Font
 from openpyxl.utils import get_column_letter
 from myxlutils import format_date_rows, get_column_names_and_index, format_dollar_values
@@ -17,6 +17,8 @@ currentFill = PatternFill(patternType="solid", fgColor="E6B8B7")
 redBorder = Side(border_style="medium", color = "FF0000")
 boldFont = Font(bold=True)
 leftAlign = Alignment(horizontal="left", vertical="top")
+
+print('Formatting Tabs')
 
 # *****************************************************************
 # ************************ Details Tab ****************************
@@ -67,15 +69,13 @@ for r in range(2, sDetail.max_row+1):
                 sDetail.cell(row=r, column=detailDict["Forecast"]).fill = yellowFill 
 
 
-# *****************************************************************
-# ************************ ByType Tab *****************************
-# *****************************************************************
+# ***************************************************************
+# ************************ Type Tab *****************************
+# ***************************************************************
 
-sByType = wbReport["ByType"]
+sByType = wbReport["Type"]
 
-# This really is the profit center type.
-# In QBO this is the "Class" field so lets rename it that.
-sByType.cell(row=1, column = 1).value = "Class"
+sByType.cell(row=1, column = 1).value = "Group Name"
 
 typeDict = {}
 get_column_names_and_index(sByType, typeDict)
@@ -125,10 +125,67 @@ sByType.cell(row = sByType.max_row, column = typeDict["Review"]+1).border = Bord
 
 
 # *****************************************************************
+# ********************* Profit Center Tab *************************
+# *****************************************************************
+
+sByPC = wbReport["ProfitCenter"]
+
+# In QBO this is the "Class" field so lets rename it that.
+sByPC.cell(row=1, column = 1).value = "Class Name"
+
+PCDict = {}
+get_column_names_and_index(sByPC, PCDict)
+
+# Freeze and left-align top row
+sByPC.freeze_panes = "A2"
+
+# Format currency cols to ()
+for r in range(2, sByPC.max_row+1):
+    for c in range(2, sByPC.max_column+1):
+        sByPC.cell(row=r, column=c).number_format = '"$"#,##0_);[Red]("$"#,##0)'
+
+# Format Column Widths
+for col in range(2, sByPC.max_column):
+    sByPC.column_dimensions[get_column_letter(col)].width = 12
+sByPC.column_dimensions[get_column_letter(1)].width = 20
+sByPC.column_dimensions[get_column_letter(sByPC.max_column)].width = 14
+
+# Color Total Rows and Cols blue and make bold and left align
+for c in range(1, sByPC.max_column):
+    sByPC.cell(row = sByPC.max_row, column = c).fill = blueFill
+    sByPC.cell(row = sByPC.max_row, column = c).font = boldFont
+for r in range(2, sByPC.max_row+1):
+    sByPC.cell(row = r, column = PCDict["Total"]).fill = blueFill
+    sByPC.cell(row = r, column = PCDict["Total"]).font = boldFont
+    sByPC.cell(row = r, column = 1).alignment = leftAlign
+
+# Color Overdue, Complete, Review, Review+1 #E6B8B7
+sByPC.cell(row = 1, column = PCDict["Overdue"]-1).fill = currentFill
+sByPC.cell(row = 1, column = PCDict["Overdue"]).fill = currentFill
+sByPC.cell(row = 1, column = PCDict["Complete"]).fill = currentFill
+sByPC.cell(row = 1, column = PCDict["Review"]).fill = currentFill
+sByPC.cell(row = 1, column = PCDict["Review"]+1).fill = currentFill
+
+# Red border around Overdue, Complete, Review, Review+1
+sByPC.cell(row = 1, column = PCDict["Overdue"]-1).border = Border(top=redBorder, left=redBorder, bottom=redBorder)
+sByPC.cell(row = 1, column = PCDict["Overdue"]).border = Border(top=redBorder, bottom=redBorder)
+sByPC.cell(row = 1, column = PCDict["Complete"]).border = Border(top=redBorder, bottom=redBorder)
+sByPC.cell(row = 1, column = PCDict["Review"]).border = Border(top=redBorder, bottom=redBorder)
+sByPC.cell(row = 1, column = PCDict["Review"]+1).border = Border(top=redBorder, right=redBorder, bottom=redBorder)
+
+sByPC.cell(row = sByPC.max_row, column = PCDict["Overdue"]-1).border = Border(top=redBorder, left=redBorder, bottom=redBorder)
+sByPC.cell(row = sByPC.max_row, column = PCDict["Overdue"]).border = Border(top=redBorder, bottom=redBorder)
+sByPC.cell(row = sByPC.max_row, column = PCDict["Complete"]).border = Border(top=redBorder, bottom=redBorder)
+sByPC.cell(row = sByPC.max_row, column = PCDict["Review"]).border = Border(top=redBorder, bottom=redBorder)
+sByPC.cell(row = sByPC.max_row, column = PCDict["Review"]+1).border = Border(top=redBorder, right=redBorder, bottom=redBorder)
+
+
+
+# *****************************************************************
 # *********************** ByClient Tab ****************************
 # *****************************************************************
 
-sByClient = wbReport["ByClient"]
+sByClient = wbReport["Client"]
 
 clientDict = {}
 get_column_names_and_index(sByClient, clientDict)
@@ -185,6 +242,9 @@ sPM = wbReport["PM"]
 PMDict = {}
 get_column_names_and_index(sPM, PMDict)
 
+sPM.cell(row=1, column = 1).value = "Project Manager"
+sPM.cell(row=1, column = 1).font = boldFont
+
 # Freeze and left-align top row
 sPM.freeze_panes = "A2"
 
@@ -238,6 +298,9 @@ NYsPM = wbReport["NY-PM"]
 NYPMDict = {}
 get_column_names_and_index(NYsPM, NYPMDict)
 
+NYsPM.cell(row=1, column = 1).value = "Project Manager"
+NYsPM.cell(row=1, column = 1).font = boldFont
+
 # Freeze and left-align top row
 NYsPM.freeze_panes = "A2"
 
@@ -285,7 +348,7 @@ for r in range(2, sSummary.max_row):
 # Format Column Widths
 for col in range(2, sSummary.max_column):
     sSummary.column_dimensions[get_column_letter(col)].width = 11.6
-sSummary.column_dimensions[get_column_letter(1)].width = 14.5
+sSummary.column_dimensions[get_column_letter(1)].width = 15.5
 sSummary.column_dimensions[get_column_letter(2)].width = 29
 sSummary.column_dimensions[get_column_letter(sSummary.max_column)].width = 13.5
 
@@ -345,7 +408,7 @@ for r in range(2, NYsSummary.max_row):
 # Format Column Widths
 for col in range(2, NYsSummary.max_column):
     NYsSummary.column_dimensions[get_column_letter(col)].width = 11.6
-NYsSummary.column_dimensions[get_column_letter(1)].width = 14.5
+NYsSummary.column_dimensions[get_column_letter(1)].width = 15.5
 NYsSummary.column_dimensions[get_column_letter(2)].width = 29
 NYsSummary.column_dimensions[get_column_letter(NYsSummary.max_column)].width = 13.5
 
