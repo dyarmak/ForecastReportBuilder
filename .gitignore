@@ -5,3 +5,5 @@ toCompile/
 *.xlsx
 venv/
 *.csv
+*.ipynb
+JupyterNotebooks/
